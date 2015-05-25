@@ -1,0 +1,15 @@
+---
+
+- user: user={{ secondary_user }} comment="Secondary backup user" home=/
+- group: name={{ secondary_user }}
+
+- file: path=/home/{{ secondary_user }}/ owner=root state=directory recurse=yes group={{ secondary_user }}
+- file: path=/home/{{ secondary_user }}/.ssh owner={{ secondary_user }} state=directory recurse=yes group={{ secondary_user }}
+- file: path=/home/{{ secondary_user }}/primary owner={{ secondary_user }} state=directory recurse=yes group={{ secondary_user }}
+
+- copy: src=ssh_keys/secondary.id_rsa.pub dest=/home/{{ secondary_user }}/.ssh/authorized_keys group={{ secondary_user }} owner={{ secondary_user }}
+
+#Install SSHd config for implements scponly and chrooting
+- template: src=sshd_config.j2 dest=/etc/ssh/sshd_config
+  notify:
+    - reload SSHd

@@ -1,0 +1,48 @@
+---
+
+- name: Install necessary packages for backup
+  apt: state=installed name={{item}}
+  with_items:
+    - fail2ban
+    - gnupg
+    - backupninja
+
+- name: Install duplicity
+  apt: state=installed name=duplicity
+  when:
+    ansible_distribution_release != "wheezy"
+
+- include: manualduplicity.yml
+  when:
+    ansible_distribution_release == "wheezy"
+
+- name: install backup ssh key
+  copy: src=ssh_keys/{{ inventory_hostname }}.id_rsa dest=/root/.ssh/id_rsa.backup owner=root group=root mode=600
+
+- name: copy backup GPG key
+  copy: src=gpg_keys/{{ inventory_hostname }}.gpg dest=/root/gnupg.import.gpg owner=root group=root mode=600
+  tags: backup
+
+- shell: gpg -K {{ gpg_keyid }}
+  register: key_installed
+  ignore_errors: True
+
+- name: import GPG key
+  command: gpg --allow-secret-key-import --import /root/gnupg.import.gpg
+  when: key_installed|failed
+  tags: backup
+
+# We need to do these two steps as GPG doesn't let us set trust with
+# --batch, nor does it let us set trust on import. it looks weird but
+# it could be worse.
+- name: setup GPG trust
+  template: src=owner_trust.j2 dest=/root/owner_trust
+
+- name: Import GPG trust
+  command: gpg --import-ownertrust /root/owner_trust
+
+- name: install duplicity job
+  template: src=eqbackup.dup.j2 dest=/etc/backup.d/eqbackup.dup mode=700
+
+- name: install backupninja conf
+  copy: src=backupninja.conf dest=/etc/backupninja.conf mode=700

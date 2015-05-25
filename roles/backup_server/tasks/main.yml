@@ -1,0 +1,36 @@
+---
+
+- group: name=backupusers
+
+- file: path=/home/backup/ group=backupusers state=directory
+
+- file: path=/home/backup/{{ hostvars[item].backup_user}} owner=root state=directory recurse=yes
+  with_items:
+     groups.backup_clients
+
+- file: path=/home/backup/{{ hostvars[item].backup_user}}/.ssh owner={{ hostvars[item].backup_user}} group=backupusers state=directory recurse=yes
+  with_items:
+     groups.backup_clients
+
+- file: path=/home/backup/{{ hostvars[item].backup_user}}/{{ item }} owner={{ hostvars[item].backup_user}} group=backupusers state=directory recurse=yes
+  with_items:
+     groups.backup_clients
+
+- user: user={{ hostvars[item].backup_user}} comment="Backup user for {{item}}" \
+     group=backupusers home=/ #home=/home/backup/{{item}}
+  with_items:
+     groups.backup_clients
+
+#Install SSHd config for implements scponly and chrooting
+- copy: src=sshd_config dest=/etc/ssh/sshd_config
+  notify:
+    - reload SSHd
+
+#TODO set up authorized_hosts
+- copy: src=ssh_keys/{{item}}.id_rsa.pub \
+     dest=/home/backup/{{ hostvars[item].backup_user}}/.ssh/authorized_keys \
+     owner={{ hostvars[item].backup_user }} group=backupusers
+  with_items:
+     groups.backup_clients
+
+- include: secondary.yml

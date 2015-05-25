@@ -1,0 +1,34 @@
+# Disable testconnect because we use desturl
+testconnect = no
+
+# You may change this if you are a partition-maniac
+tmpdir = /tmp
+
+[gpg]
+# passphrase needed to unlock the GnuPG key
+# NB: do not quote it, and it should not contain any quote
+password = {{ gpg_passphrase }}
+
+# default is no, for backward compatibility with backupninja <= 0.5.
+# when set to yes, encryptkey option must be set below.
+sign = yes
+
+# key ID used for data encryption and, optionnally, signing.
+# if not set, local root's default gpg key is used.
+encryptkey = {{ gpg_keyid[-8:] }}
+
+[source]
+# Specify the paths to your files
+include = /home
+
+[dest]
+# Adjust these to your own taste
+incremental = yes
+increments = 15
+keep = 30
+
+# This is relative to the home that the user will be chrooted into
+destdir = /primary
+desthost = {{secondary_server}}
+sshoptions = -oIdentityFile=/root/.ssh/id_rsa.secondary
+destuser = {{secondary_user }}

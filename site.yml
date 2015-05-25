@@ -1,0 +1,27 @@
+---
+
+- hosts: all
+  user: root
+  roles:
+    - common
+
+- hosts: backup_primary
+  user: root
+  roles:
+    - backup_server
+  vars_files:
+    - vars.yml
+
+- hosts: backup_secondary
+  user: root
+  roles:
+    - backup_secondary
+  vars_files:
+    - vars.yml
+
+- hosts: backup_clients
+  user: root
+  roles:
+    - backup_client
+  vars_files:
+    - vars.yml

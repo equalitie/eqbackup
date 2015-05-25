@@ -1,0 +1,28 @@
+- command: ls duplicity-{{duplicity_version}}.egg-info -d chdir=/usr/local/lib/python2.7/dist-packages/
+  register: duplicity_version_installed
+  ignore_errors: True
+
+- name: Install duplicity
+  apt: state=installed name={{item}}
+  with_items:
+    - python-dev
+    - librsync-dev
+    - python-lockfile
+  when:
+    duplicity_version_installed != "duplicity-{{duplicity_version}}.egg-info"
+
+- get_url: url=https://code.launchpad.net/duplicity/0.6-series/{{duplicity_version}}/+download/duplicity-{{duplicity_version}}.tar.gz dest=/tmp/duplicity.tar.bz2
+  when:
+    duplicity_version_installed != "duplicity-{{duplicity_version}}.egg-info"
+
+- unarchive: src=/tmp/duplicity.tar.bz2 dest=/tmp/ copy=no
+  when:
+    duplicity_version_installed != "duplicity-{{duplicity_version}}.egg-info"
+
+- command: chdir=/tmp/duplicity-{{duplicity_version}}/ python ./setup.py install
+  when:
+    duplicity_version_installed != "duplicity-{{duplicity_version}}.egg-info"
+
+# We need to patch backupninja to play nice with the later versions of
+# duplicity because the --version flag emits multiple lines now.
+- copy: src=dup dest=/usr/share/backupninja/dup
