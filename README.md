@@ -1,5 +1,5 @@
 eqbackup
--------
+========
 
 eqbackup is a set of ansible recipes developed for the setup of a
 comprehensive backup system on Debian systems, with a secondary backup
@@ -19,7 +19,7 @@ eqbackup will:
   users - not just backup users. Be warned!
 
 Configuring eqbackup
-========
+-------
 
 Almost all configuration of eqbackup isdone via hosts.yml. All
 `gpg_keyid` varaibles should be specified as full fingerprints with no
@@ -47,10 +47,10 @@ username used for secondary backups, the duplicity version and the
 default backup paths.
 
 Generating SSH keys for a host
-========
+--------
 * `ssh-keygen -f ssh_keys/THE_EXACT_HOSTNAME.id_rsa -t rsa -b 4096`
 
 Generating GPG keys for a host
-========
+--------
 * `gpg --gen-key` (Follow instructions as usual)
 * `gpg --export-secret-keys THE_KEY_ID > gpg_keys/THE_EXACT_HOSTNAME.gpg`
