@@ -8,6 +8,7 @@
     - python-dev
     - librsync-dev
     - python-lockfile
+    - python-paramiko
   when:
     duplicity_version_installed != "duplicity-{{duplicity_version}}.egg-info"
 
