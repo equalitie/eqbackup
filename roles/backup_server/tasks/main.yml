@@ -7,13 +7,13 @@
   with_items:
      groups.backup_clients
 
-- file: path=/home/backup/ group=backupusers state=directory
+- file: path=/home/backup/ group=backupusers state=directory mode=750
 
-- file: path=/home/backup/{{ hostvars[item].backup_user}} owner=root state=directory recurse=yes
+- file: path=/home/backup/{{ hostvars[item].backup_user}} owner=root state=directory recurse=yes mode=750
   with_items:
      groups.backup_clients
 
-- file: path=/home/backup/{{ hostvars[item].backup_user}}/.ssh owner={{ hostvars[item].backup_user}} group=backupusers state=directory recurse=yes
+- file: path=/home/backup/{{ hostvars[item].backup_user}}/.ssh owner={{ hostvars[item].backup_user}} group=backupusers state=directory recurse=yes mode=750
   with_items:
      groups.backup_clients
 
