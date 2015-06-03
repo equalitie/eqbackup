@@ -9,7 +9,7 @@
 
 - file: path=/home/backup/ group=backupusers state=directory mode=750
 
-- file: path=/home/backup/{{ hostvars[item].backup_user}} owner=root state=directory recurse=yes mode=750
+- file: path=/home/backup/{{ hostvars[item].backup_user}} owner=root state=directory recurse=yes mode=750 group=backupusers
   with_items:
      groups.backup_clients
 
