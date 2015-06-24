@@ -6,6 +6,7 @@
     - fail2ban
     - gnupg
     - backupninja
+    - python-setuptools
     # Ubuntu sometimes requires this to be manually installed rather
     # than installed by duplicity itself.
     - python-paramiko
