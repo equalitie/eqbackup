@@ -6,6 +6,9 @@
     - fail2ban
     - gnupg
     - backupninja
+    # Ubuntu sometimes requires this to be manually installed rather
+    # than installed by duplicity itself.
+    - python-paramiko
 
 - name: Install duplicity
   apt: state=installed name=duplicity
