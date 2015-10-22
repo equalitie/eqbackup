@@ -62,3 +62,6 @@ After an install, each backup client *must* ssh to the backup primary
 system and accept the ssh key. Alternatively you can manually install
 this on your backup clients. Failure to do this results in backupninja
 hanging.
+
+Hopefully this goes without saying: do not wait until a moment of great
+need to test the integrity of your backups!
