@@ -54,11 +54,3 @@ Generating GPG keys for a host
 --------
 * `gpg --gen-key` (Follow instructions as usual)
 * `gpg --export-secret-keys THE_KEY_ID > gpg_keys/THE_EXACT_HOSTNAME.gpg`
-
-Gotchas
---------
-
-After an install, each backup client *must* ssh to the backup primary
-system and accept the ssh key. Alternatively you can manually install
-this on your backup clients. Failure to do this results in backupninja
-hanging.

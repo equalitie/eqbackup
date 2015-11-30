@@ -21,11 +21,16 @@
     ansible_distribution_release == "wheezy"
 
 - name: install backup ssh key
-  copy: src=ssh_keys/{{ inventory_hostname }}.id_rsa dest=/root/.ssh/id_rsa.backup owner=root group=root mode=600
+  copy: src=ssh_keys/{{ inventory_hostname }}.id_rsa dest=/root/.ssh/id_rsa.backup
+        owner=root group=root mode=600
 
 - name: copy backup GPG key
-  copy: src=gpg_keys/{{ inventory_hostname }}.gpg dest=/root/gnupg.import.gpg owner=root group=root mode=600
-  tags: backup
+  copy: src=gpg_keys/{{ inventory_hostname }}.gpg dest=/root/gnupg.import.gpg
+        owner=root group=root mode=600
+
+- name: add backup server known_hosts
+  known_hosts: path='/root/.ssh/known_hosts' name="{{ groups.backup_primary[0] }}"
+               key="{{ lookup('pipe', 'ssh-keyscan -t rsa ' + groups.backup_primary[0]) }}"
 
 - shell: gpg -K {{ gpg_keyid }}
   register: key_installed
@@ -34,7 +39,6 @@
 - name: import GPG key
   command: gpg --allow-secret-key-import --import /root/gnupg.import.gpg
   when: key_installed|failed
-  tags: backup
 
 # We need to do these two steps as GPG doesn't let us set trust with
 # --batch, nor does it let us set trust on import. it looks weird but
