@@ -63,3 +63,11 @@ of its own backups:
 
     gpg --gen-key # Follow instructions as usual
     gpg --export-secret-keys THE_KEY_ID > gpg_keys/THE_EXACT_HOSTNAME.gpg
+
+SSH and PGP keys for backup from primary to secondary
+--------
+
+The primary backup server acts as a client of the secondary. Its PGP and SSH
+keys must generated exactly like client hosts, but have to be prefixed with
+"secondary" (i.e. filenames will be `secondary.gpg`, `secondary.id_rsa` and
+`secondary.id_rsa.pub`).
