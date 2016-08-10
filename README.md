@@ -55,7 +55,7 @@ command to generate such files:
 
     ssh-keygen -f ssh_keys/THE_EXACT_HOSTNAME.id_rsa -t rsa -b 4096
 
-Generating GPG keys for a host
+Generating GPG keys for a client host
 --------
 
 Each client host also needs its own PGP key pair, for encryption and decryption
