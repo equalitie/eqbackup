@@ -21,7 +21,7 @@ eqbackup will:
 Configuring eqbackup
 -------
 
-Almost all configuration of eqbackup isdone via hosts.yml. All
+Almost all configuration of eqbackup is done via hosts.yml. All
 `gpg_keyid` varaibles should be specified as full fingerprints with no
 spaces and not as 8 digit key IDs.
 
@@ -46,11 +46,20 @@ Some additional configuration can be changed in `vars.yml`, such as the
 username used for secondary backups, the duplicity version and the
 default backup paths.
 
-Generating SSH keys for a host
+Generating SSH keys for a client host
 --------
-* `ssh-keygen -f ssh_keys/THE_EXACT_HOSTNAME.id_rsa -t rsa -b 4096`
+
+Each client host needs its own SSH key pair so as to access the primary backup
+host. SSH keys file names follow a strict naming rule, as represented by this
+command to generate such files:
+
+    ssh-keygen -f ssh_keys/THE_EXACT_HOSTNAME.id_rsa -t rsa -b 4096
 
 Generating GPG keys for a host
 --------
-* `gpg --gen-key` (Follow instructions as usual)
-* `gpg --export-secret-keys THE_KEY_ID > gpg_keys/THE_EXACT_HOSTNAME.gpg`
+
+Each client host also needs its own PGP key pair, for encryption and decryption
+of its own backups:
+
+    gpg --gen-key # Follow instructions as usual
+    gpg --export-secret-keys THE_KEY_ID > gpg_keys/THE_EXACT_HOSTNAME.gpg
