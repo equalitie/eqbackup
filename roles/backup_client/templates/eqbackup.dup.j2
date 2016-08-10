@@ -23,11 +23,11 @@ encryptkey = {{ gpg_keyid[-8:] }}
 include = {{ path }}
 {% endfor %}
 
-{% for include in backup_include %}
+{% for include in backup_include|default([]) %}
 include = {{ include }}
 {% endfor %}
 
-{% for exclude in backup_exclude %}
+{% for exclude in backup_exclude|default([]) %}
 exclude = {{ exclude }}
 {% endfor %}
 
