@@ -2,7 +2,6 @@
 - apt: state=installed name={{item}}
   with_items:
     - fail2ban
-    - emacs
 
 - name: Set timezone
   copy: content='Etc/UTC'
