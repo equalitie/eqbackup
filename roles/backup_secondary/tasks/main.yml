@@ -1,15 +1,44 @@
 ---
+- user:
+    name: "{{secondary_user}}"
+    comment: "Secondary backup user"
+    home: /
 
-- user: user={{ secondary_user }} comment="Secondary backup user" home=/
-- group: name={{ secondary_user }}
+- group:
+    name: "{{secondary_user}}"
 
-- file: path=/home/{{ secondary_user }}/ owner=root state=directory recurse=yes group={{ secondary_user }}
-- file: path=/home/{{ secondary_user }}/.ssh owner={{ secondary_user }} state=directory recurse=yes group={{ secondary_user }}
-- file: path=/home/{{ secondary_user }}/primary owner={{ secondary_user }} state=directory recurse=yes group={{ secondary_user }}
+- file:
+    path: "/home/{{secondary_user}}"
+    owner: root
+    group: "{{secondary_user}}"
+    state: directory
+    recurse: yes
 
-- copy: src=ssh_keys/secondary.id_rsa.pub dest=/home/{{ secondary_user }}/.ssh/authorized_keys group={{ secondary_user }} owner={{ secondary_user }}
+- file:
+    path: "/home/{{secondary_user}}/.ssh"
+    owner: "{{secondary_user}}"
+    group: "{{secondary_user}}"
+    state: directory
+    recurse: yes
 
-#Install SSHd config for implements scponly and chrooting
-- template: src=sshd_config.j2 dest=/etc/ssh/sshd_config
+- file:
+    path: "/home/{{secondary_user}}/primary"
+    owner: "{{secondary_user}}"
+    group: "{{secondary_user}}"
+    state: directory
+    recurse: yes
+
+- copy:
+    src: ssh_keys/secondary.id_rsa.pub
+    dest: "/home/{{secondary_user}}/.ssh/authorized_keys"
+    owner: "{{secondary_user}}"
+    group: "{{secondary_user}}"
+
+# Install SSHd config for implements scponly and chrooting
+- template:
+    src: sshd_config.j2
+    dest: /etc/ssh/sshd_config
+    owner: root
+    group: root
   notify:
     - reload SSHd

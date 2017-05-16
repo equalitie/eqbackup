@@ -1,21 +1,31 @@
 ---
-
 - name: Install necessary packages for backup
-  apt: state=installed name={{item}}
+  apt:
+    name: "{{item}}"
+    state: installed
   with_items:
-    - fail2ban
     - gnupg
     - backupninja
     - duplicity
 
 - name: install secondary backup ssh key
-  copy: src=ssh_keys/secondary.id_rsa dest=/root/.ssh/id_rsa.secondary owner=root group=root mode=600
+  copy:
+    src: ssh_keys/secondary.id_rsa
+    dest: /root/.ssh/id_rsa.secondary
+    owner: root
+    group: root
+    mode: 0600
 
 - name: copy backup GPG key
-  copy: src=gpg_keys/secondary.gpg dest=/root/gnupg.import.gpg owner=root group=root mode=600
+  copy:
+    src: gpg_keys/secondary.gpg
+    dest: /root/gnupg.import.gpg
+    owner: root
+    group: root
+    mode: 0600
   tags: backup
 
-- shell: gpg -K {{ gpg_keyid }}
+- shell: gpg -K "{{gpg_keyid}}"
   register: key_installed
   ignore_errors: True
 
@@ -28,13 +38,21 @@
 # --batch, nor does it let us set trust on import. it looks weird but
 # it could be worse.
 - name: setup GPG trust
-  template: src=owner_trust.j2 dest=/root/owner_trust
+  template:
+    src: owner_trust.j2
+    dest: /root/owner_trust
 
 - name: Import GPG trust
   command: gpg --import-ownertrust /root/owner_trust
 
 - name: install duplicity job
-  template: src=secondary.dup.j2 dest=/etc/backup.d/secondary.dup mode=700
+  template:
+    src: secondary.dup.j2
+    dest: /etc/backup.d/secondary.dup
+    mode: 0700
 
 - name: install backupninja conf
-  copy: src=backupninja.conf dest=/etc/backupninja.conf mode=700
+  copy:
+    src: backupninja.conf
+    dest: /etc/backupninja.conf
+    mode: 0700

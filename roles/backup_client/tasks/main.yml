@@ -1,9 +1,9 @@
 ---
-
 - name: Install necessary packages for backup
-  apt: state=installed name={{item}}
+  apt:
+    name: "{{item}}"
+    state: installed
   with_items:
-    - fail2ban
     - gnupg
     - backupninja
     - python-setuptools
@@ -12,27 +12,39 @@
     - python-paramiko
 
 - name: Install duplicity
-  apt: state=installed name=duplicity
-  when:
-    ansible_distribution_release != "wheezy"
-
-- include: manualduplicity.yml
-  when:
-    ansible_distribution_release == "wheezy"
+  apt:
+    name: duplicity
+    state: installed
+#  when:
+#    ansible_distribution_release != "wheezy"
+# FIXME: For now let see is this is still needed
+#- include: manualduplicity.yml
+#  when:
+#    ansible_distribution_release == "wheezy"
 
 - name: install backup ssh key
-  copy: src=ssh_keys/{{ inventory_hostname }}.id_rsa dest=/root/.ssh/id_rsa.backup
-        owner=root group=root mode=600
+  copy:
+    src: "ssh_keys/{{inventory_hostname}}.id_rsa"
+    dest: /root/.ssh/id_rsa.backup
+    owner: root
+    group: root
+    mode: 0600
 
 - name: copy backup GPG key
-  copy: src=gpg_keys/{{ inventory_hostname }}.gpg dest=/root/gnupg.import.gpg
-        owner=root group=root mode=600
+  copy:
+    src: "gpg_keys/{{inventory_hostname}}.gpg"
+    dest: /root/gnupg.import.gpg
+    owner: root
+    group: root
+    mode: 0600
 
 - name: add backup server known_hosts
-  known_hosts: path='/root/.ssh/known_hosts' name="{{ groups.backup_primary[0] }}"
-               key="{{ lookup('pipe', 'ssh-keyscan -t rsa ' + groups.backup_primary[0]) }}"
+  known_hosts:
+    path: '/root/.ssh/known_hosts'
+    name: "{{groups.backup_primary[0]}}"
+    key: "{{ lookup('pipe', 'ssh-keyscan -t rsa ' + groups.backup_primary[0]) }}"
 
-- shell: gpg -K {{ gpg_keyid }}
+- shell: gpg -K {{gpg_keyid}}
   register: key_installed
   ignore_errors: True
 
@@ -44,13 +56,21 @@
 # --batch, nor does it let us set trust on import. it looks weird but
 # it could be worse.
 - name: setup GPG trust
-  template: src=owner_trust.j2 dest=/root/owner_trust
+  template:
+    src: owner_trust.j2
+    dest: /root/owner_trust
 
 - name: Import GPG trust
   command: gpg --import-ownertrust /root/owner_trust
 
 - name: install duplicity job
-  template: src=eqbackup.dup.j2 dest=/etc/backup.d/eqbackup.dup mode=700
+  template:
+    src: eqbackup.dup.j2
+    dest: /etc/backup.d/eqbackup.dup
+    mode: 0700
 
 - name: install backupninja conf
-  copy: src=backupninja.conf dest=/etc/backupninja.conf mode=700
+  copy:
+    src: backupninja.conf
+    dest: /etc/backupninja.conf
+    mode: 0700
