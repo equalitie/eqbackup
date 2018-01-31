@@ -1,4 +1,0 @@
----
- secondary_user: secondary_backup
- duplicity_version: 0.6.26
- backup_paths: ["/root", "/home", "/usr", "/opt", "/etc", "/var", "/srv"]
