@@ -55,6 +55,8 @@ command to generate such files:
 
     ssh-keygen -f ssh_keys/THE_EXACT_HOSTNAME.id_rsa -t rsa -b 4096
 
+    No need to add passphrase on your key since we do not support it here.
+
 Generating GPG keys for a client host
 --------
 
@@ -62,6 +64,10 @@ Each client host also needs its own PGP key pair, for encryption and decryption
 of its own backups:
 
     gpg --gen-key # Follow instructions as usual
+
+    Adding a passphrase here is recommented and supported. Passphrase should
+    not have any quotes.
+
     gpg --export-secret-keys THE_KEY_ID > gpg_keys/THE_EXACT_HOSTNAME.gpg
 
 SSH and PGP keys for backup from primary to secondary
