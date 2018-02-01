@@ -2,6 +2,7 @@
 
 - hosts: all
   user: root
+  sudo: true
   roles:
     - common
 
@@ -9,19 +10,14 @@
   user: root
   roles:
     - backup_server
-  vars_files:
-    - vars.yml
 
 - hosts: backup_secondary
   user: root
   roles:
     - backup_secondary
-  vars_files:
-    - vars.yml
 
 - hosts: backup_clients
   user: root
+  sudo: true
   roles:
     - backup_client
-  vars_files:
-    - vars.yml
