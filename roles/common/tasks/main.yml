@@ -1,13 +1,10 @@
 ---
-- apt: state=installed name={{item}}
-  with_items:
-    - fail2ban
-
 - name: Set timezone
-  copy: content='Etc/UTC'
-        dest=/etc/timezone
-        owner=root
-        group=root
-        mode=0644
+  template:
+    src: timezone.j2
+    dest: /etc/timezone
+    owner: root
+    group: root
+    mode: 0644
   notify:
     - update timezone
