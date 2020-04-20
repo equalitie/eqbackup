@@ -3,7 +3,7 @@
   apt:
     name: "{{item}}"
     state: installed
-  with_items:
+  loop:
     - gnupg
     - backupninja
     - duplicity
@@ -14,7 +14,7 @@
     dest: /root/.ssh/id_rsa.secondary
     owner: root
     group: root
-    mode: 0600
+    mode: '0600'
 
 - name: copy backup GPG key
   copy:
@@ -22,7 +22,7 @@
     dest: /root/gnupg.import.gpg
     owner: root
     group: root
-    mode: 0600
+    mode: '0600'
   tags: backup
 
 - shell: gpg -K "{{gpg_keyid}}"
@@ -49,10 +49,10 @@
   template:
     src: secondary.dup.j2
     dest: /etc/backup.d/secondary.dup
-    mode: 0700
+    mode: '0700'
 
 - name: install backupninja conf
   copy:
     src: backupninja.conf
     dest: /etc/backupninja.conf
-    mode: 0700
+    mode: '0700'

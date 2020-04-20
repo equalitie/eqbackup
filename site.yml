@@ -11,6 +11,5 @@
 
 - hosts: backup_clients
   user: root
-  sudo: true
   roles:
     - backup_client

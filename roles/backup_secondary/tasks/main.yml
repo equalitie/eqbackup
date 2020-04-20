@@ -35,6 +35,8 @@
     group: "{{secondary_user}}"
 
 # Install SSHd config for implements scponly and chrooting
+# TODO: Should do this with lineinfile so we do not intefere with
+# other roles that might need to touch this
 - template:
     src: sshd_config.j2
     dest: /etc/ssh/sshd_config
