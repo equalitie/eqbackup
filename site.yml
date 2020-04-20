@@ -1,11 +1,4 @@
 ---
-
-- hosts: all
-  user: root
-  sudo: true
-  roles:
-    - common
-
 - hosts: backup_primary
   user: root
   roles:
