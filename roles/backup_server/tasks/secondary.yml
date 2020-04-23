@@ -1,12 +1,11 @@
 ---
 - name: Install necessary packages for backup
   apt:
-    name: "{{item}}"
-    state: installed
-  loop:
-    - gnupg
-    - backupninja
-    - duplicity
+    name:
+      - gnupg
+      - backupninja
+      - duplicity
+    state: present
 
 - name: install secondary backup ssh key
   copy:
@@ -52,7 +51,9 @@
     mode: '0700'
 
 - name: install backupninja conf
-  copy:
-    src: backupninja.conf
+  template:
+    src: backupninja.conf.j2
     dest: /etc/backupninja.conf
-    mode: '0700'
+    owner: root
+    group: root
+    mode: '0600'

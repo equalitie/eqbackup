@@ -1,15 +1,15 @@
 ---
 - hosts: backup_primary
-  user: root
+  become: true
   roles:
     - backup_server
 
 - hosts: backup_secondary
-  user: root
+  become: true
   roles:
     - backup_secondary
 
 - hosts: backup_clients
-  user: root
+  become: true
   roles:
     - backup_client

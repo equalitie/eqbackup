@@ -10,9 +10,6 @@ keys.
 eqbackup will:
 * Install and configure backupninja and duplicity on all hosts except
   for the secondary backup, which is not backed up.
-* On Debian wheezy, download and manually install duplicity due to
-  problems in wheezy's version of duplicity. In turn, backupninja's
-  dup job is patched to account for this.
 * Install SSH and GPG keys as appropriate around the system.
 * Configure SSHd on both backup primary and secondary to restrict
   accesses by backup clients and to force SSH key logins for all

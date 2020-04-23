@@ -59,6 +59,6 @@
     dest: "/home/backup/{{hostvars[item].backup_user}}/.ssh/authorized_keys"
     owner: "{{hostvars[item].backup_user}}"
     group: backupusers
-  with_items: "{{groups.backup_clients}}"
+  loop: "{{groups.backup_clients}}"
 
 - include: secondary.yml
