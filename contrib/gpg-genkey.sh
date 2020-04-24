@@ -27,7 +27,7 @@ cat > $TMPFILE <<EOF
 EOF
 
 gpg --batch --generate-key $TMPFILE >/dev/null 2>&1
-FINGERPRINT="$(gpg --list-keys --with-colons backup@$varhostname | awk -F: '/^pub:/ { print $5 }')"
+FINGERPRINT="$(gpg --list-signatures --with-colons backup@$varhostname | awk -F: '/^sig:/ { print $13; exit; }')"
 ls gpg_keys/$varhostname.gpg >/dev/null 2>&1
 EXISTS=$?
 
