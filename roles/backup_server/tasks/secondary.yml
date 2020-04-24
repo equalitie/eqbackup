@@ -7,6 +7,20 @@
       - duplicity
     state: present
 
+- local_action:
+    module: command
+    cmd: "ssh-keygen -f ssh_keys/secondary.id_rsa -t rsa -b 4096 -q -N ''"
+    args:
+      creates: "ssh_keys/secondary.id_rsa"
+  become: false
+
+- file:
+    path: /root/.ssh
+    state: directory
+    owner: root
+    group: root
+    mode: '0700'
+
 - name: install secondary backup ssh key
   copy:
     src: ssh_keys/secondary.id_rsa
@@ -22,20 +36,15 @@
     owner: root
     group: root
     mode: '0600'
-  tags: backup
 
-- shell: gpg -K "{{gpg_keyid}}"
+- shell: gpg -K "{{ gpg_keyid }}"
   register: key_installed
   ignore_errors: True
 
 - name: import GPG key
-  command: gpg --allow-secret-key-import --import /root/gnupg.import.gpg
-  when: key_installed|failed
-  tags: backup
+  command: gpg --batch --import /root/gnupg.import.gpg
+  when: key_installed is defined and key_installed.failed
 
-# We need to do these two steps as GPG doesn't let us set trust with
-# --batch, nor does it let us set trust on import. it looks weird but
-# it could be worse.
 - name: setup GPG trust
   template:
     src: owner_trust.j2
