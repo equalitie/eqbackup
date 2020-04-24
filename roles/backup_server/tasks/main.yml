@@ -3,62 +3,91 @@
     name: backupusers
 
 - user:
-    name: "{{hostvars[item].backup_user}}"
-    comment: "Backup user for {{item}}"
+    name: "{{ item }}"
+    comment: "Backup user for {{ item }}"
     group: backupusers
     home: /
     createhome: no
-  loop: "{{groups.backup_clients}}"
+  loop: "{{ groups.backup_clients }}"
 
 - file:
-    path: /home/backup/
+    path: /home/backup
     group: backupusers
     state: directory
     mode: '0750'
 
 - file:
-    path: "/home/backup/{{hostvars[item].backup_user}}"
+    path: "/home/backup/{{ item }}"
     owner: root
     group: backupusers
     state: directory
     recurse: yes
     mode: '0750'
-  loop: "{{groups.backup_clients}}"
+  loop: "{{ groups.backup_clients }}"
 
 - file:
-    path: "/home/backup/{{hostvars[item].backup_user}}/.ssh"
-    owner: "{{hostvars[item].backup_user}}"
+    path: "/home/backup/{{ item }}/.ssh"
+    owner: "{{ item }}"
     group: backupusers
     state: directory
     recurse: yes
     mode: '0750'
-  loop: "{{groups.backup_clients}}"
+  loop: "{{ groups.backup_clients }}"
 
 - file:
-    path: "/home/backup/{{hostvars[item].backup_user}}/{{item}}"
-    owner: "{{hostvars[item].backup_user}}"
+    path: "/home/backup/{{ item }}/{{ item }}"
+    owner: "{{ item }}"
     group: backupusers
     state: directory
     recurse: yes
-  loop: "{{groups.backup_clients}}"
+  loop: "{{ groups.backup_clients }}"
 
+######## FIXME ##########
 # Install SSHd config for implements scponly and chrooting
 # TODO: change this to use lineinfile if needed to not intefere with
 # other roles that touch this
-- copy:
-    src: sshd_config
-    dest: /etc/ssh/sshd_config
-    owner: root
-    group: root
+#- copy:
+#    src: sshd_config
+#    dest: /etc/ssh/sshd_config
+#    owner: root
+#    group: root
+#  notify:
+#    - reload SSHd
+###### FIXME ##### This does not work .. it it needed?
+#- lineinfile:
+#    path: /etc/ssh/sshd_config
+#    regexp: '^Subsystem *sftp'
+#    line: 'Subsystem sftp internal-sftp'
+#  notify:
+#    - reload SSHd
+
+- blockinfile:
+    path: /etc/ssh/sshd_config
+    block: |
+      Match group backupusers
+         ChrootDirectory /home/backup/%u
+         AuthorizedKeysFile /home/backup/%u/.ssh/authorized_keys
+         X11Forwarding no
+         AllowTcpForwarding no
+         ForceCommand internal-sftp
+    insertafter: EOF
   notify:
     - reload SSHd
 
-# TODO set up authorized_hosts
+- local_action:
+    module: command
+    cmd: "ssh-keygen -f ssh_keys/{{ item }}.id_rsa -t rsa -b 4096 -q -N ''"
+    args:
+      creates: "ssh_keys/{{ item }}.id_rsa"
+  become: false
+  loop: "{{ groups.backup_clients }}"
+
 - copy:
-    src: "ssh_keys/{{item}}.id_rsa.pub"
-    dest: "/home/backup/{{hostvars[item].backup_user}}/.ssh/authorized_keys"
-    owner: "{{hostvars[item].backup_user}}"
+    src: "ssh_keys/{{ item }}.id_rsa.pub"
+    dest: "/home/backup/{{ item }}/.ssh/authorized_keys"
+    owner: "{{ item }}"
     group: backupusers
-  loop: "{{groups.backup_clients}}"
+    mode: '0600'
+  loop: "{{ groups.backup_clients }}"
 
 - include: secondary.yml
