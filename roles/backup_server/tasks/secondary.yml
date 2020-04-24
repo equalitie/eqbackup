@@ -21,6 +21,13 @@
     group: root
     mode: '0700'
 
+- file:
+    path: /var/cache/backupninja
+    state: directory
+    owner: root
+    group: root
+    mode: '0700'
+
 - name: install secondary backup ssh key
   copy:
     src: ssh_keys/secondary.id_rsa
@@ -66,3 +73,9 @@
     owner: root
     group: root
     mode: '0600'
+
+- name: add secondary server known_hosts
+  known_hosts:
+    path: '/root/.ssh/known_hosts'
+    name: "{{ groups.backup_secondary[0] }}"
+    key: "{{ lookup('pipe', 'ssh-keyscan -t rsa ' + groups.backup_secondary[0]) }}"
