@@ -56,10 +56,10 @@
 ###### FIXME ##### This does not work .. it it needed?
 #- lineinfile:
 #    path: /etc/ssh/sshd_config
-#    regexp: '^Subsystem *sftp'
+#    regexp: 'regexp='^#?Subsystem[ \t]+sftp'
 #    line: 'Subsystem sftp internal-sftp'
 #  notify:
-#    - reload SSHd
+#    - restart SSHd
 
 - blockinfile:
     path: /etc/ssh/sshd_config
@@ -72,7 +72,7 @@
          ForceCommand internal-sftp
     insertafter: EOF
   notify:
-    - reload SSHd
+    - restart SSHd
 
 - local_action:
     module: command
