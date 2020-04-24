@@ -1,2 +1,2 @@
 ---
-backup_daily_when: '13:00'
+secondary_user: 'secondary_backup'
