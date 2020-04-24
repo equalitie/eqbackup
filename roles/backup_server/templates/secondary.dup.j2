@@ -1,6 +1,6 @@
 # {{ ansible_managed }}
 #
-options = --ssh-options="-oIdentityFile=/root/.ssh/id_rsa.secondary"
+options = --ssh-options -oIdentityFile=/root/.ssh/id_rsa.secondary
 
 # Disable testconnect because we use desturl
 testconnect = no
