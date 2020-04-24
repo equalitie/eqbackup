@@ -42,25 +42,6 @@
     recurse: yes
   loop: "{{ groups.backup_clients }}"
 
-######## FIXME ##########
-# Install SSHd config for implements scponly and chrooting
-# TODO: change this to use lineinfile if needed to not intefere with
-# other roles that touch this
-#- copy:
-#    src: sshd_config
-#    dest: /etc/ssh/sshd_config
-#    owner: root
-#    group: root
-#  notify:
-#    - reload SSHd
-###### FIXME ##### This does not work .. it it needed?
-#- lineinfile:
-#    path: /etc/ssh/sshd_config
-#    regexp: 'regexp='^#?Subsystem[ \t]+sftp'
-#    line: 'Subsystem sftp internal-sftp'
-#  notify:
-#    - restart SSHd
-
 - blockinfile:
     path: /etc/ssh/sshd_config
     block: |
