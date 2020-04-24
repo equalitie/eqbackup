@@ -1,4 +1,7 @@
 # {{ ansible_managed }}
+#
+options = --ssh-options="-oIdentityFile=/root/.ssh/id_rsa.secondary"
+
 # Disable testconnect because we use desturl
 testconnect = no
 
@@ -29,7 +32,11 @@ increments = 15
 keep = 30
 
 # This is relative to the home that the user will be chrooted into
-destdir = /primary
-desthost = {{ secondary_server }}
-sshoptions = -oIdentityFile=/root/.ssh/id_rsa.secondary
-destuser = {{ secondary_user }}
+#destdir = /primary
+#desthost = {{ secondary_server }}
+#sshoptions = -oIdentityFile=/root/.ssh/id_rsa.secondary
+#destuser = {{ secondary_user }}
+
+# This depends on the options = --ssh-options="-oIdentityFile=/root/.ssh/id_rsa.secondary"
+# at the top of this file
+desturl = sftp://{{ secondary_user }}@{{ secondary_server }}/primary
