@@ -70,7 +70,7 @@ libdirectory = /usr/lib/backupninja
 usecolors = yes
 
 # default value for 'when'
-when = everyday at {{ backup_daily_when }}
+when = everyday at {{ backup_daily_when | default('13:00') }}
 
 # if running vservers, set to yes
 vservers = no
