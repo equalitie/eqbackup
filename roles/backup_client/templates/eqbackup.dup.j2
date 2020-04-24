@@ -41,7 +41,7 @@ incremental = yes
 increments = {{increments}}
 keep = {{keep}}
 
-desturl = sftp://{{backup_user}}@{{groups.backup_primary[0]}}//{{inventory_hostname}}
+desturl = sftp://{{ inventory_hostname }}@{{ groups.backup_primary[0] }}/{{ inventory_hostname }}
 
 # This is relative to the home that the user will be chrooted into
 # commented because using desturl so it works on debian 9+
@@ -49,4 +49,4 @@ desturl = sftp://{{backup_user}}@{{groups.backup_primary[0]}}//{{inventory_hostn
 #destdir = /{{ inventory_hostname }}
 #desthost = {{ groups.backup_primary[0] }}
 #sshoptions = -oIdentityFile=/root/.ssh/id_rsa.backup
-#destuser = {{ backup_user }}
+#destuser = {{ inventory_hostname }}
