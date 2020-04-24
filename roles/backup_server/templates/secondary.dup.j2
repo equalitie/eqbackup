@@ -1,3 +1,4 @@
+# {{ ansible_managed }}
 # Disable testconnect because we use desturl
 testconnect = no
 
@@ -29,6 +30,6 @@ keep = 30
 
 # This is relative to the home that the user will be chrooted into
 destdir = /primary
-desthost = {{secondary_server}}
+desthost = {{ secondary_server }}
 sshoptions = -oIdentityFile=/root/.ssh/id_rsa.secondary
-destuser = {{secondary_user }}
+destuser = {{ secondary_user }}
