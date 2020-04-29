@@ -1,12 +1,32 @@
 ---
 - name: Install necessary packages for backup
   apt:
-    name: "{{item}}"
-    state: installed
-  with_items:
-    - gnupg
-    - backupninja
-    - duplicity
+    name:
+      - gnupg
+      - backupninja
+      - duplicity
+    state: present
+
+- local_action:
+    module: command
+    cmd: "ssh-keygen -f ssh_keys/secondary.id_rsa -t rsa -b 4096 -q -N ''"
+    args:
+      creates: "ssh_keys/secondary.id_rsa"
+  become: false
+
+- file:
+    path: /root/.ssh
+    state: directory
+    owner: root
+    group: root
+    mode: '0700'
+
+- file:
+    path: /var/cache/backupninja
+    state: directory
+    owner: root
+    group: root
+    mode: '0700'
 
 - name: install secondary backup ssh key
   copy:
@@ -14,7 +34,7 @@
     dest: /root/.ssh/id_rsa.secondary
     owner: root
     group: root
-    mode: 0600
+    mode: '0600'
 
 - name: copy backup GPG key
   copy:
@@ -22,21 +42,16 @@
     dest: /root/gnupg.import.gpg
     owner: root
     group: root
-    mode: 0600
-  tags: backup
+    mode: '0600'
 
-- shell: gpg -K "{{gpg_keyid}}"
+- shell: gpg -K "{{ gpg_keyid }}"
   register: key_installed
   ignore_errors: True
 
 - name: import GPG key
-  command: gpg --allow-secret-key-import --import /root/gnupg.import.gpg
-  when: key_installed|failed
-  tags: backup
+  command: gpg --batch --import /root/gnupg.import.gpg
+  when: key_installed is defined and key_installed.failed
 
-# We need to do these two steps as GPG doesn't let us set trust with
-# --batch, nor does it let us set trust on import. it looks weird but
-# it could be worse.
 - name: setup GPG trust
   template:
     src: owner_trust.j2
@@ -49,10 +64,18 @@
   template:
     src: secondary.dup.j2
     dest: /etc/backup.d/secondary.dup
-    mode: 0700
+    mode: '0700'
 
 - name: install backupninja conf
-  copy:
-    src: backupninja.conf
+  template:
+    src: backupninja.conf.j2
     dest: /etc/backupninja.conf
-    mode: 0700
+    owner: root
+    group: root
+    mode: '0600'
+
+- name: add secondary server known_hosts
+  known_hosts:
+    path: '/root/.ssh/known_hosts'
+    name: "{{ groups.backup_secondary[0] }}"
+    key: "{{ lookup('pipe', 'ssh-keyscan -t rsa ' + groups.backup_secondary[0]) }}"

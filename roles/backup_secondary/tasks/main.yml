@@ -1,44 +1,53 @@
 ---
+- group:
+    name: "{{ secondary_user }}"
+
 - user:
-    name: "{{secondary_user}}"
+    name: "{{ secondary_user }}"
+    group: "{{ secondary_user }}"
     comment: "Secondary backup user"
+    createhome: no
     home: /
 
-- group:
-    name: "{{secondary_user}}"
-
 - file:
-    path: "/home/{{secondary_user}}"
+    path: "/home/{{ secondary_user }}"
     owner: root
-    group: "{{secondary_user}}"
+    group: "{{ secondary_user }}"
     state: directory
     recurse: yes
 
 - file:
-    path: "/home/{{secondary_user}}/.ssh"
-    owner: "{{secondary_user}}"
-    group: "{{secondary_user}}"
+    path: "/home/{{ secondary_user }}/.ssh"
+    owner: "{{ secondary_user }}"
+    group: "{{ secondary_user }}"
     state: directory
+    mode: '0700'
     recurse: yes
 
 - file:
-    path: "/home/{{secondary_user}}/primary"
-    owner: "{{secondary_user}}"
-    group: "{{secondary_user}}"
+    path: "/home/{{ secondary_user }}/primary"
+    owner: "{{ secondary_user }}"
+    group: "{{ secondary_user }}"
     state: directory
+    mode: '0700'
     recurse: yes
 
 - copy:
     src: ssh_keys/secondary.id_rsa.pub
-    dest: "/home/{{secondary_user}}/.ssh/authorized_keys"
-    owner: "{{secondary_user}}"
-    group: "{{secondary_user}}"
+    dest: "/home/{{ secondary_user }}/.ssh/authorized_keys"
+    owner: "{{ secondary_user }}"
+    group: "{{ secondary_user }}"
+    mode: '0600'
 
-# Install SSHd config for implements scponly and chrooting
-- template:
-    src: sshd_config.j2
-    dest: /etc/ssh/sshd_config
-    owner: root
-    group: root
+- blockinfile:
+    path: /etc/ssh/sshd_config
+    block: |
+      Match user {{ secondary_user }}
+         ChrootDirectory /home/%u
+         AuthorizedKeysFile /home/%u/.ssh/authorized_keys
+         X11Forwarding no
+         AllowTcpForwarding no
+         ForceCommand internal-sftp
+    insertafter: EOF
   notify:
-    - reload SSHd
+    - restart SSHd

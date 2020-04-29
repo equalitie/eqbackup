@@ -1,4 +1,4 @@
-o#
+# {{ ansible_managed }}
 #                          |\_
 # B A C K U P N I N J A   /()/
 #                         `\|
@@ -19,7 +19,7 @@ reportemail = root
 
 # if set to 'yes', a report email will be generated
 # even if all modules reported success. (default = yes)
-reportsuccess = yes
+reportsuccess = {{ reportsuccess | default('yes') }} 
 
 # if set to 'yes', info messages from handlers will be
 # sent into the email (default = no)
@@ -70,7 +70,7 @@ libdirectory = /usr/lib/backupninja
 usecolors = yes
 
 # default value for 'when'
-when = everyday at 13:00
+when = everyday at {{ backup_daily_when | default('13:00') }}
 
 # if running vservers, set to yes
 vservers = no
@@ -82,7 +82,7 @@ vservers = no
 # CSTREAM=/usr/bin/cstream
 # MYSQL=/usr/bin/mysql
 # MYSQLHOTCOPY=/usr/bin/mysqlhotcopy
-# MYSQLDUMP=/usr/bin/omysqldump
+# MYSQLDUMP=/usr/bin/mysqldump
 # PSQL=/usr/bin/psql
 # PGSQLDUMP=/usr/bin/pg_dump
 # PGSQLDUMPALL=/usr/bin/pg_dumpall

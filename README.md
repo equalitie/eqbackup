@@ -10,9 +10,6 @@ keys.
 eqbackup will:
 * Install and configure backupninja and duplicity on all hosts except
   for the secondary backup, which is not backed up.
-* On Debian wheezy, download and manually install duplicity due to
-  problems in wheezy's version of duplicity. In turn, backupninja's
-  dup job is patched to account for this.
 * Install SSH and GPG keys as appropriate around the system.
 * Configure SSHd on both backup primary and secondary to restrict
   accesses by backup clients and to force SSH key logins for all
@@ -21,7 +18,7 @@ eqbackup will:
 Configuring eqbackup
 -------
 
-Almost all configuration of eqbackup is done via hosts.yml. All
+Almost all configuration of eqbackup is done in inventory, example hosts.yml. All
 `gpg_keyid` varaibles should be specified as full fingerprints with no
 spaces and not as 8 digit key IDs.
 
@@ -46,12 +43,20 @@ Some additional configuration can be changed in `vars.yml`, such as the
 username used for secondary backups, the duplicity version and the
 default backup paths.
 
+Warning: You will need to manually set systems timezone since we do not
+want to overwrite any existing time zone setting deployed by other methods.
+
+Also these roles expect Debian 9+ and Ansible 2.8+
+
 Generating SSH keys for a client host
 --------
 
 Each client host needs its own SSH key pair so as to access the primary backup
 host. SSH keys file names follow a strict naming rule, as represented by this
 command to generate such files:
+
+    You can manually generate keys but now the role will do it automatically for
+    you if the key does not exist
 
     ssh-keygen -f ssh_keys/THE_EXACT_HOSTNAME.id_rsa -t rsa -b 4096
 
@@ -62,6 +67,13 @@ Generating GPG keys for a client host
 
 Each client host also needs its own PGP key pair, for encryption and decryption
 of its own backups:
+
+    You can manually generate if you know what you are doing and do not
+    want default gpg keys generate or run the interactive script
+
+    contrib/gpg-genkey.sh
+
+    Manual method:
 
     gpg --gen-key # Follow instructions as usual
 

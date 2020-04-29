@@ -1,81 +1,63 @@
 ---
 - name: Install necessary packages for backup
   apt:
-    name: "{{item}}"
-    state: installed
-  with_items:
-    - gnupg
-    - backupninja
-    - python-setuptools
-    # Ubuntu sometimes requires this to be manually installed rather
-    # than installed by duplicity itself.
-    - python-paramiko
-    - python-gobject-2
+    name:
+      - gnupg
+      - backupninja
+      - python-setuptools
+      - python-paramiko
+      - python-gobject-2
+    state: present
 
 - name: Install duplicity
   apt:
     name: duplicity
-    state: installed
-#  when:
-#    ansible_distribution_release != "wheezy"
-# FIXME: For now let see is this is still needed
-#- include: manualduplicity.yml
-#  when:
-#    ansible_distribution_release == "wheezy"
+    state: present
+
+- file:
+    path: /var/cache/backupninja
+    state: directory
+    owner: root
+    group: root
+    mode: '0700'
+
+- file:
+    path: /root/.ssh
+    state: directory
+    owner: root
+    group: root
+    mode: '0700'
 
 - name: install backup ssh key
   copy:
-    src: "ssh_keys/{{inventory_hostname}}.id_rsa"
+    src: "ssh_keys/{{ inventory_hostname }}.id_rsa"
     dest: /root/.ssh/id_rsa.backup
     owner: root
     group: root
-    mode: 0600
+    mode: '0600'
 
 - name: copy backup GPG key
   copy:
-    src: "gpg_keys/{{inventory_hostname}}.gpg"
+    src: "gpg_keys/{{ inventory_hostname }}.gpg"
     dest: /root/gnupg.import.gpg
     owner: root
     group: root
-    mode: 0600
+    mode: '0600'
 
 - name: add backup server known_hosts
-  command: ssh-keyscan -t rsa {{groups.backup_primary[0]}}
-  register: known_hosts_primary
+  known_hosts:
+    path: '/root/.ssh/known_hosts'
+    name: "{{ groups.backup_primary[0] }}"
+    key: "{{ lookup('pipe', 'ssh-keyscan -t rsa ' + groups.backup_primary[0]) }}"
 
-# Something that works for ansible 1.7+
-- name: update root known_hosts for primary backup server
-  lineinfile:
-    dest: /root/.ssh/known_hosts
-    regexp: "^{{groups.backup_primary[0]}}"
-    line: "{{known_hosts_primary['stdout']}}"
-    state: present
-    owner: root
-    group: root
-    mode: 0600
-    create: true
-    backup: true
-
-# This does not work on ansible 1.7
-#- name: add backup server known_hosts
-#  known_hosts:
-#    path: '/root/.ssh/known_hosts'
-#    name: "{{groups.backup_primary[0]}}"
-#    key: "{{ lookup('pipe', 'ssh-keyscan -t rsa ' + groups.backup_primary[0]) }}"
-
-- shell: gpg -K {{gpg_keyid}}
+- shell: gpg -K "{{ gpg_keyid }}"
   register: key_installed
   ignore_errors: True
 
-# FIXME: This does not work in newer gpg. Like in Debian 9. It stalls waiting for the PASSPHRASE
-# Need to figure out howto do non-interactive
 - name: import GPG key
-  command: gpg --allow-secret-key-import --import /root/gnupg.import.gpg
-  when: key_installed|failed
+  command: gpg --batch --import /root/gnupg.import.gpg
+  when: key_installed is defined and key_installed.failed
 
-# We need to do these two steps as GPG doesn't let us set trust with
-# --batch, nor does it let us set trust on import. it looks weird but
-# it could be worse.
 - name: setup GPG trust
   template:
     src: owner_trust.j2
@@ -88,10 +70,12 @@
   template:
     src: eqbackup.dup.j2
     dest: /etc/backup.d/eqbackup.dup
-    mode: 0600
+    mode: '0600'
 
 - name: install backupninja conf
-  copy:
-    src: backupninja.conf
+  template:
+    src: roles/backup_server/templates/backupninja.conf.j2
     dest: /etc/backupninja.conf
-    mode: 0600
+    owner: root
+    group: root
+    mode: '0600'
