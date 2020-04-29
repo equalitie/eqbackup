@@ -60,6 +60,11 @@
 - name: Import GPG trust
   command: gpg --import-ownertrust /root/owner_trust
 
+- name: set secondary_server var
+  set_fact:
+    secondary_server: "{{ groups.backup_secondary | first }}"
+
+
 - name: install duplicity job
   template:
     src: secondary.dup.j2
