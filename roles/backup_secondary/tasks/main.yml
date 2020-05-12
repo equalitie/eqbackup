@@ -1,4 +1,23 @@
 ---
+- name: Install ufw
+  apt:
+    name:
+      - ufw
+    state: present
+
+- name: Lookup external IPv4 address for backup_primary
+  local_action:
+    module: command /usr/bin/dig +noall +short {{ groups.backup_primary | first }}
+  register: backup_primary_lookup
+
+- name: Allow backup primary IP to ssh
+  ufw:
+    rule: allow
+    from_ip: '{{ backup_primary_lookup.stdout }}'
+    port: ssh
+    proto: 'tcp'
+    comment: 'Backup Primary'
+
 - group:
     name: "{{ secondary_user }}"
 
