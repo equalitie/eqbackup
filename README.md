@@ -14,6 +14,12 @@ eqbackup will:
 * Configure SSHd on both backup primary and secondary to restrict
   accesses by backup clients and to force SSH key logins for all
   users - not just backup users. Be warned!
+* Open firewall to on backup primary server to allow clients ssh and
+  open firewall on backup secondary server to allow primary ssh.
+  We do not enable the firewall. This is add just in case there is
+  a firewall blocking ssh.
+  Note: This expects that some other firewall was set to allow ssh
+  from our controller, ie; eQ cityhall
 
 Configuring eqbackup
 -------
