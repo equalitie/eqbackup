@@ -14,6 +14,12 @@ eqbackup will:
 * Configure SSHd on both backup primary and secondary to restrict
   accesses by backup clients and to force SSH key logins for all
   users - not just backup users. Be warned!
+* Open firewall to on backup primary server to allow clients ssh and
+  open firewall on backup secondary server to allow primary ssh.
+  We do not enable the firewall. This is add just in case there is
+  a firewall blocking ssh.
+  Note: This expects that some other firewall was set to allow ssh
+  from our controller, ie; eQ cityhall
 
 Configuring eqbackup
 -------
@@ -42,6 +48,11 @@ of directories to be backed up.
 Some additional configuration can be changed in `vars.yml`, such as the
 username used for secondary backups, the duplicity version and the
 default backup paths.
+
+The easy way to start is to copy the `hosts.yml` file to `inventory`
+and edit the `inventory` file to fit you hosts. We will default to use
+the file `inventory` for your production setup. If you change this use the
+-i my_inventory on you command line.
 
 Warning: You will need to manually set systems timezone since we do not
 want to overwrite any existing time zone setting deployed by other methods.

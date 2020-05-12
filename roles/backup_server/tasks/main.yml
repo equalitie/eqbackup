@@ -1,4 +1,29 @@
 ---
+- name: Install ufw
+  apt:
+    name:
+      - ufw
+    state: present
+
+- name: Use DNS for host external IPv4 address
+  local_action:
+    module: command /usr/bin/dig +noall +short {{ item }}
+  loop: "{{ groups.backup_clients }}"
+  register: dns_ip
+
+- set_fact:
+    client_ipaddrs: "{{ client_ipaddrs }} + [ '{{ item.stdout.split('\n') | first }}' ]"
+  loop: "{{ dns_ip.results }}"
+
+- name: Allow client IP to ssh
+  ufw:
+    rule: allow
+    from_ip: '{{ item }}'
+    port: ssh
+    proto: 'tcp'
+    comment: 'Backup'
+  loop: "{{ client_ipaddrs }}"
+
 - group:
     name: backupusers
 

@@ -2,3 +2,4 @@
 ssh_keys/*id_rsa*
 gpg_keys/*gpg
 *.retry
+inventory
