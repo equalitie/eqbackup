@@ -13,3 +13,8 @@
   become: yes
   roles:
     - backup_client
+
+- hosts: localhost
+  become: yes
+  roles:
+    - local
