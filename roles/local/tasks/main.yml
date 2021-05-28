@@ -11,7 +11,7 @@
     prompt: |
 
             We are now done. If you have just added or changed
-            any setting it is recomeneded to make a checkpoint
+            any setting it is recommended to make a checkpoint
             tar file. Answer "y" here. Everything else will be
             considered as a "n".
 
