@@ -1,0 +1,26 @@
+---
+- name: make restore dir in playbook root
+  file:
+    path: "{{ playbook_dir }}/restore"
+    state: directory
+    mode: '0700'
+  tags:
+    - checkpoint
+
+- pause:
+    prompt: |
+
+            We are now done. If you have just added or changed
+            any setting it is recomeneded to make a checkpoint
+            tar file. Answer "y" here. Everything else will be
+            considered as a "n".
+
+            Make a local recover checkpoint tar file? (y/n)"
+  register: restore_y
+  tags:
+    - checkpoint
+
+- shell: "cd {{ playbook_dir }} && tar acvf restore/restore-{{ ansible_date_time.iso8601_basic_short }}.tar.gz {{ ansible_inventory_sources | first | basename }} gpg_keys/ ssh_keys/"
+  when: restore_y.user_input == "y"
+  tags:
+    - checkpoint

@@ -50,7 +50,7 @@ username used for secondary backups, the duplicity version and the
 default backup paths.
 
 The easy way to start is to copy the `hosts.yml` file to `inventory`
-and edit the `inventory` file to fit you hosts. We will default to use
+and edit the `inventory` file to fit your hosts. We will default to use
 the file `inventory` for your production setup. If you change this use the
 -i my_inventory on you command line.
 

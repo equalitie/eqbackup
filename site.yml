@@ -1,15 +1,20 @@
 ---
 - hosts: backup_primary
-  become: true
+  become: yes
   roles:
     - backup_server
 
 - hosts: backup_secondary
-  become: true
+  become: yes
   roles:
     - backup_secondary
 
 - hosts: backup_clients
-  become: true
+  become: yes
   roles:
     - backup_client
+
+- hosts: localhost
+  become: yes
+  roles:
+    - local
