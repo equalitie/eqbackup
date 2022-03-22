@@ -1,5 +1,5 @@
 ---
-- name: Install necessary packages for backup
+- name: Install necessary packages for backup for Debian < 11
   apt:
     name:
       - gnupg
@@ -8,6 +8,18 @@
       - python-paramiko
       - python-gobject-2
     state: present
+  when: ansible_distribution == "Debian" and ansible_distribution_version|int < 11
+
+- name: Install necessary packages for backup for Debian >= 11
+  apt:
+    name:
+      - gnupg
+      - backupninja
+      - python3-setuptools
+      - python3-paramiko
+      # - python-gobject-2
+    state: present
+  when: ansible_distribution == "Debian" and ansible_distribution_version|int >= 11
 
 - name: Install duplicity
   apt:
