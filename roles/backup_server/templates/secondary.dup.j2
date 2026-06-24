@@ -39,4 +39,4 @@ keep = 30
 
 # This depends on the options = --ssh-options="-oIdentityFile=/root/.ssh/id_rsa.secondary"
 # at the top of this file
-desturl = sftp://{{ secondary_user }}@{{ secondary_server }}/primary
+desturl = pexpect+sftp://{{ secondary_user }}@{{ secondary_server }}/primary
