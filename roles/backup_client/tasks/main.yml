@@ -26,6 +26,7 @@
     name:
       - gnupg
       - backupninja
+      - python3-paramiko
     state: present
   when: ansible_distribution == "Ubuntu"
 
