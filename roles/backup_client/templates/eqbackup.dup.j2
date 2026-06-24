@@ -1,6 +1,10 @@
 # {{ ansible_managed }}
 # options to pass to duplicity like --verbosity 9
-options = -oIdentityFile=/root/.ssh/id_rsa.backup
+{% if ansible_distribution == 'Ubuntu' %}
+options = --ssh-options "-oIdentityFile=/root/.ssh/id_rsa.backup"
+{% else %}
+options = --ssh-options -oIdentityFile=/root/.ssh/id_rsa.backup
+{% endif %}
 
 # Disable testconnect because we use desturl
 testconnect = no
