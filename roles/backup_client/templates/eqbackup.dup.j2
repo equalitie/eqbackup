@@ -1,11 +1,12 @@
 # {{ ansible_managed }}
 # options to pass to duplicity like --verbosity 9
-options = --ssh-options -oIdentityFile=/root/.ssh/id_rsa.backup
+options = -oIdentityFile=/root/.ssh/id_rsa.backup
 
 # Disable testconnect because we use desturl
 testconnect = no
 
 # You may change this if you are a partition-maniac
+
 tmpdir = /tmp
 
 [gpg]
@@ -41,8 +42,11 @@ incremental = yes
 increments = {{increments}}
 keep = {{keep}}
 
+{% if ansible_distribution == 'Ubuntu' %}
+desturl = pexpect+sftp://{{ inventory_hostname }}@{{ groups.backup_primary[0] }}/{{ inventory_hostname }}
+{% else %}
 desturl = sftp://{{ inventory_hostname }}@{{ groups.backup_primary[0] }}/{{ inventory_hostname }}
-
+{% endif %}
 # This is relative to the home that the user will be chrooted into
 # commented because using desturl so it works on debian 9+
 # scp seems broken so using sftp
