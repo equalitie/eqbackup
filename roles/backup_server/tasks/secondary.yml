@@ -84,3 +84,17 @@
     path: '/root/.ssh/known_hosts'
     name: "{{ groups.backup_secondary[0] }}"
     key: "{{ lookup('pipe', 'ssh-keyscan -t rsa ' + groups.backup_secondary[0]) }}"
+
+- name: add secondary server ssh config
+  blockinfile:
+    path: /root/.ssh/config
+    create: yes
+    owner: root
+    group: root
+    mode: '0600'
+    marker: "# {mark} ANSIBLE MANAGED BLOCK eqbackup {{ groups.backup_secondary[0] }}"
+    block: |
+      Host {{ groups.backup_secondary[0] }}
+        hostname {{ groups.backup_secondary[0] }}
+        IdentityFile /root/.ssh/id_rsa.secondary
+        IdentitiesOnly yes

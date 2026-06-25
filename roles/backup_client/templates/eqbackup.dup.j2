@@ -1,6 +1,8 @@
 # {{ ansible_managed }}
 # options to pass to duplicity like --verbosity 9
-options = --ssh-options -oIdentityFile=/root/.ssh/id_rsa.backup
+# This is not dependable going to different version. Changed
+# to using ~/.ssh/config entry.
+# options = --ssh-options -oIdentityFile=/root/.ssh/id_rsa.backup
 
 # Disable testconnect because we use desturl
 testconnect = no
