@@ -5,3 +5,6 @@ increments: 15
 keep: 30
 backup_daily_when: '01:00'
 reportsuccess: 'no'
+# Add "IdentitiesOnly yes" to the managed ssh config block. Set to false if the
+# host needs to offer other keys (e.g. the Ansible control host) for that Host.
+ssh_identities_only: true

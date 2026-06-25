@@ -97,4 +97,4 @@
       Host {{ groups.backup_secondary[0] }}
         hostname {{ groups.backup_secondary[0] }}
         IdentityFile /root/.ssh/id_rsa.secondary
-        IdentitiesOnly yes
+        {{ 'IdentitiesOnly yes' if ssh_identities_only else '' }}
