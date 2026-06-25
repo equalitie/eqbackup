@@ -17,7 +17,6 @@
       - backupninja
       - python3-setuptools
       - python3-paramiko
-      # - python-gobject-2
     state: present
   when: ansible_distribution == "Debian" and ansible_distribution_version|int >= 11
 
@@ -26,6 +25,7 @@
     name:
       - gnupg
       - backupninja
+      - python3-paramiko
     state: present
   when: ansible_distribution == "Ubuntu"
 
@@ -69,6 +69,20 @@
     path: '/root/.ssh/known_hosts'
     name: "{{ groups.backup_primary[0] }}"
     key: "{{ lookup('pipe', 'ssh-keyscan -t rsa ' + groups.backup_primary[0]) }}"
+
+- name: add backup server ssh config
+  blockinfile:
+    path: /root/.ssh/config
+    create: yes
+    owner: root
+    group: root
+    mode: '0600'
+    marker: "# {mark} ANSIBLE MANAGED BLOCK eqbackup {{ groups.backup_primary[0] }}"
+    block: |
+      Host {{ groups.backup_primary[0] }}
+        hostname {{ groups.backup_primary[0] }}
+        IdentityFile /root/.ssh/id_rsa.backup
+        {{ 'IdentitiesOnly yes' if ssh_identities_only | bool else '' }}
 
 - shell: gpg -K "{{ gpg_keyid }}"
   register: key_installed

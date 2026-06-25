@@ -1,6 +1,5 @@
 # {{ ansible_managed }}
 #
-options = --ssh-options -oIdentityFile=/root/.ssh/id_rsa.secondary
 
 # Disable testconnect because we use desturl
 testconnect = no
@@ -37,6 +36,5 @@ keep = 30
 #sshoptions = -oIdentityFile=/root/.ssh/id_rsa.secondary
 #destuser = {{ secondary_user }}
 
-# This depends on the options = --ssh-options="-oIdentityFile=/root/.ssh/id_rsa.secondary"
-# at the top of this file
-desturl = sftp://{{ secondary_user }}@{{ secondary_server }}/primary
+# IdentityFile is supplied via /root/.ssh/config (managed by Ansible)
+desturl = pexpect+sftp://{{ secondary_user }}@{{ secondary_server }}/primary
