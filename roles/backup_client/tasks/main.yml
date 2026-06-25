@@ -82,7 +82,7 @@
       Host {{ groups.backup_primary[0] }}
         hostname {{ groups.backup_primary[0] }}
         IdentityFile /root/.ssh/id_rsa.backup
-        {{ 'IdentitiesOnly yes' if ssh_identities_only else '' }}
+        {{ 'IdentitiesOnly yes' if ssh_identities_only | bool else '' }}
 
 - shell: gpg -K "{{ gpg_keyid }}"
   register: key_installed
